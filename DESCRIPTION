@@ -1,0 +1,13 @@
+Package: phyloseq.pal
+Title: Functions For Plotting and Statistical Testing With Phyloseq Objects
+Version: 0.0.0.9000
+Authors@R: 
+    person("Ellen Elizabeth", "Smith", , "r03es23@abdn.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-9909-3451"))
+Description: This is a colleciton of functions to simplify visualising and performing statistical tests on Phyloseq objects with complex metadata.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: phyloseq, ggplot2, RColorBrewer, forcats
