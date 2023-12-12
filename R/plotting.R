@@ -123,13 +123,14 @@ plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,by
 
   #check if phyloseq agglomerated at appropriate rank
   #and if not, perform agglomeration
-  if(length(unique(as.data.frame(ps@tax_table@.Data)[,rank])) == length(unique(rownames((as.data.frame(ps@tax_table@.Data)))))){
+  if(!length(unique(as.data.frame(ps@tax_table@.Data)[,rank])) == length(unique(rownames((as.data.frame(ps@tax_table@.Data)))))){
     print("Agglomerating at specified rank...")
     ps@tax_table@.Data[is.na(ps@tax_table@.Data)] <- "Unassigned"
     glom <-tax_glom(ps, taxrank = rank, NArm = FALSE)
     print("Done.")
   }else{
     print("Using provided agglomerated object.")
+    glom <- ps
   }
 
   #get the specified no of ASVs.
@@ -176,7 +177,7 @@ plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,by
     labs(fill=rank)+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
     theme(legend.position = "bottom")+
-    theme(text = element_text(size = size))
+    theme(text = element_text(size = size))+
     scale_y_continuous(expand = c(0,0))+
     scale_x_discrete(expand = c(0,0))
 
