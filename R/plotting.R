@@ -62,7 +62,7 @@ getgloms <- function(ps,ranks= c("Phylum" ,"Class","Order","Family","Genus")){
 #' @export
 #'
 #' @examples
-plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,byabundance=TRUE){
+plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,byabundance=TRUE,abs=FALSE,size=10){
 
   #set cols
   cols.n <- c(c(nice20, ridiculouslybigcolset)[1:n],"lightgrey")
@@ -122,10 +122,13 @@ plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,by
     labs(fill=rank)+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
     theme(legend.position = "bottom")+
+    theme(text = element_text(size = size))
     scale_y_continuous(expand = c(0,0))+
     scale_x_discrete(expand = c(0,0))
 
-  i
+  if(abs){
+    i <- i+ geom_bar(stat = "identity", width = 1, position = "stack")
+  }
 
   if (is.character(wrap)){
     i <- i + facet_grid(as.formula(paste("~", wrap)), scales = "free_x", space = "free")
