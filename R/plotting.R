@@ -37,21 +37,21 @@ theme_pp_blankx <- c(theme_pp,
 #' @examples
 ps_from_ampliseq <- function(directory,metadata=NULL,ranks){
   #asvs
-  asv <- otu_table(as.matrix(read.table(paste0(directory,"/dada2/ASV_table.tsv"),header = TRUE,row.names = 1)),taxa_are_rows = TRUE)
+  asv <- phyloseq::otu_table(as.matrix(read.table(paste0(directory,"/dada2/ASV_table.tsv"),header = TRUE,row.names = 1)),taxa_are_rows = TRUE)
 
   #taxonomy
   tax <- readr::read_tsv(paste0(directory,"/dada2/ASV_tax.tsv"),col_names = TRUE)
   asvnames <- tax$ASV_ID
   tax <- tax[,ranks]
   rownames(tax) <- asvnames
-  tax <- tax_table(as.matrix(tax))
+  tax <- phyloseq::tax_table(as.matrix(tax))
 
   if(!is.null(metadata)){
     #metadata - it's on you to format this properly.
-    metadata <- sample_data(metadata)
+    metadata <- phyloseq::sample_data(metadata)
   }
 
-  ps <- phyloseq(asv,tax,metadata)
+  ps <- phyloseq::phyloseq(asv,tax,metadata)
 
   return(ps)
 }
