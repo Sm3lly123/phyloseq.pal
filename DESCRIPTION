@@ -10,6 +10,12 @@ License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Imports: phyloseq, ggplot2, RColorBrewer, forcats
 URL: https://github.com/Sm3lly123/phyloseq.pal
 BugReports: https://github.com/Sm3lly123/phyloseq.pal/issues
+Imports: 
+  RColorBrewer,
+  forcats,
+  ggplot2,
+  tidyverse,
+  phyloseq
+

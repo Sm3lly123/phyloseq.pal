@@ -1,14 +1,11 @@
 #various functions for plotting phyloseq objects
 
-#Make some colour sets
-library("RColorBrewer")
-library("forcats")
-library("ggplot2")
-library(tidyverse)
+library(ggplot2)
+
 #Nice high contrast 20 colours
 nice20 <- c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6',   '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1',   '#000075', '#808080')
 #larger set from rcolor brewer - a bit ugly but necessary
-bigcolset<-c(brewer.pal(8,"Set2"), brewer.pal(12,"Set3"), brewer.pal(9,"Set1"), brewer.pal(12,"Paired"))
+bigcolset<-c(RColorBrewer::brewer.pal(8,"Set2"), RColorBrewer::brewer.pal(12,"Set3"), RColorBrewer::brewer.pal(9,"Set1"), RColorBrewer::brewer.pal(12,"Paired"))
 #a last resort!!!!!!
 ridiculouslybigcolset <- c(rep(c(nice20,bigcolset),10))
 
@@ -24,8 +21,8 @@ theme_pp <- list(
 
 #remove x labels from tgeme
 theme_pp_blankx <- c(theme_pp,
-                        theme(axis.text.x = element_blank()),
-                        theme(axis.title.x = element_blank())
+                     theme(axis.text.x = element_blank()),
+                     theme(axis.title.x = element_blank())
 )
 
 #' DADA2 output to physloseq object
@@ -43,7 +40,7 @@ ps_from_ampliseq <- function(directory,metadata=NULL,ranks){
   asv <- otu_table(as.matrix(read.table(paste0(directory,"/dada2/ASV_table.tsv"),header = TRUE,row.names = 1)),taxa_are_rows = TRUE)
 
   #taxonomy
-  tax <- read_tsv(paste0(directory,"/dada2/ASV_tax.tsv"),col_names = TRUE)
+  tax <- readr::read_tsv(paste0(directory,"/dada2/ASV_tax.tsv"),col_names = TRUE)
   asvnames <- tax$ASV_ID
   tax <- tax[,ranks]
   rownames(tax) <- asvnames
@@ -78,7 +75,7 @@ get_nice_20 <- function(){
 #'
 #' @examples
 get_big_colours <- function(){
-  bigcolset<-c(brewer.pal(8,"Set2"), brewer.pal(12,"Set3"), brewer.pal(9,"Set1"), brewer.pal(12,"Paired"))
+  bigcolset<-c(RColorBrewer::brewer.pal(8,"Set2"), RColorBrewer::brewer.pal(12,"Set3"), RColorBrewer::brewer.pal(9,"Set1"), RColorBrewer::brewer.pal(12,"Paired"))
   #a last resort!!!!!!
   ridiculouslybigcolset <- c(rep(c(nice20,bigcolset),10))
   return(ridiculouslybigcolset)

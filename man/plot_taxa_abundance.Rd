@@ -11,7 +11,9 @@ plot_taxa_abundance(
   wrap = NULL,
   n = 20,
   colno = NULL,
-  byabundance = TRUE
+  byabundance = TRUE,
+  abs = FALSE,
+  size = 10
 )
 }
 \arguments{
