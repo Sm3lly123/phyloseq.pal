@@ -4,6 +4,7 @@
 library("RColorBrewer")
 library("forcats")
 library("ggplot2")
+library(tidyverse)
 #Nice high contrast 20 colours
 nice20 <- c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6',   '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1',   '#000075', '#808080')
 #larger set from rcolor brewer - a bit ugly but necessary
@@ -26,6 +27,62 @@ theme_pp_blankx <- c(theme_pp,
                         theme(axis.text.x = element_blank()),
                         theme(axis.title.x = element_blank())
 )
+
+#' DADA2 output to physloseq object
+#'
+#' @param directory
+#' @param metadata
+#' @param ranks
+#'
+#' @return
+#' @export
+#'
+#' @examples
+ps_from_ampliseq <- function(directory,metadata=NULL,ranks){
+  #asvs
+  asv <- otu_table(as.matrix(read.table(paste0(directory,"/dada2/ASV_table.tsv"),header = TRUE,row.names = 1)),taxa_are_rows = TRUE)
+
+  #taxonomy
+  tax <- read_tsv(paste0(directory,"/dada2/ASV_tax.tsv"),col_names = TRUE)
+  asvnames <- tax$ASV_ID
+  tax <- tax[,ranks]
+  rownames(tax) <- asvnames
+  tax <- tax_table(as.matrix(tax))
+
+  if(!is.null(metadata)){
+    #metadata - it's on you to format this properly.
+    metadata <- sample_data(metadata)
+  }
+
+  ps <- phyloseq(asv,tax,metadata)
+
+  return(ps)
+}
+
+
+#Strongly suspect this is bad practise
+#' Return 20 pretty colours
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_nice_20 <- function(){
+  return(c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6',   '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1',   '#000075', '#808080'))
+}
+
+#' Return a lot of ugly colours
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_big_colours <- function(){
+  bigcolset<-c(brewer.pal(8,"Set2"), brewer.pal(12,"Set3"), brewer.pal(9,"Set1"), brewer.pal(12,"Paired"))
+  #a last resort!!!!!!
+  ridiculouslybigcolset <- c(rep(c(nice20,bigcolset),10))
+  return(ridiculouslybigcolset)
+  }
 
 #to save time recalculating the agglomerated objects throughout the analysis.
 #returns named list of phyloseq objects
