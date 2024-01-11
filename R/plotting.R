@@ -40,18 +40,18 @@ ps_from_ampliseq <- function(directory,metadata=NULL,ranks){
   asv <- phyloseq::otu_table(as.matrix(read.table(paste0(directory,"/dada2/ASV_table.tsv"),header = TRUE,row.names = 1)),taxa_are_rows = TRUE)
 
   #taxonomy
-  tax <- readr::read_tsv(paste0(directory,"/dada2/ASV_tax.tsv"),col_names = TRUE)
-  asvnames <- tax$ASV_ID
-  tax <- tax[,ranks]
-  rownames(tax) <- asvnames
+  tax <- read.csv(paste0(directory,"/dada2/ASV_tax.tsv"),header = TRUE,sep = "\t",row.names = 1)
+  tax <- tax[,1:(ncol(tax)-2)]
   tax <- phyloseq::tax_table(as.matrix(tax))
 
   if(!is.null(metadata)){
     #metadata - it's on you to format this properly.
     metadata <- phyloseq::sample_data(metadata)
+    ps <- phyloseq::phyloseq(asv,tax,metadata)
+  }else{
+    ps <- phyloseq::phyloseq(asv,tax)
   }
 
-  ps <- phyloseq::phyloseq(asv,tax,metadata)
 
   return(ps)
 }
