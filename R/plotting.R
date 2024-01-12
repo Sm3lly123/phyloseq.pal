@@ -192,6 +192,47 @@ plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,by
   return(i)
 }
 
+#' Merge Two Differently oriented DADA2 runs from the same samples
+#'
+#' @param dada_fwd
+#' @param dada_rvs
+#'
+#' @return
+#' @export
+#'
+#' @examples
+merge_orientations <- function(dada_fwd, dada_rvs){
+
+  rvs_seqs <- Biostrings::DNAStringSet(rownames(dada_rvs))
+  rc <- reverseComplement(rvs_seqs)
+
+  rownames(dada_rvs) <- as.character(rc)
+
+
+  length(intersect(rownames(dada_rvs),rownames(dada_fwd)))
+  length(rownames(dada_rvs))
+  length(rownames(dada_fwd))
+
+  combined <- dada2::mergeSequenceTables(dada_fwd,dada_rvs,repeats = "sum")
+  length(rownames(combined))
+
+  combined.derep <- dada2::collapseNoMismatch(combined,verbose = TRUE)
+  length(rownames(combined.derep))
+
+  summary <- data.frame(fwd=length(rownames(dada_fwd)),
+                        rev=length(rownames(dada_rvs)),
+                        identical.after.rc=length(intersect(rownames(dada_rvs),rownames(dada_fwd))),
+                        expected=(length(rownames(dada_fwd))+ length(rownames(dada_rvs)))-length(intersect(rownames(dada_rvs),rownames(dada_fwd))),
+                        after.merge=length(rownames(combined)),
+                        after.collapse=length(rownames(combined.derep))
+  )
+  rownames(summary) <- "ASVS"
+  print(summary)
+
+  return(combined.derep)
+
+}
+
 #Bray curtis plots. PCOA is table from "ordinate(ps)".
 #' Bray Plot
 #'
