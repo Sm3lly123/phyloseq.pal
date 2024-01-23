@@ -9,21 +9,59 @@ bigcolset<-c(RColorBrewer::brewer.pal(8,"Set2"), RColorBrewer::brewer.pal(12,"Se
 #a last resort!!!!!!
 ridiculouslybigcolset <- c(rep(c(nice20,bigcolset),10))
 
-#a nice theme for plotting purposes. can be added to the plots after they are made
-theme_pp <- list(
-  theme_bw(),
-  theme(strip.background =element_rect(fill="white")),
-  theme(axis.text.y = element_blank()),
-  theme(axis.ticks = element_blank()),
-  scale_x_discrete(expand = c(0,0)),
-  scale_y_continuous(expand = c(0,0)),
-  theme(panel.spacing.x = unit(0,"lines")))
+theme_pp <- function (base_size = 12, base_family = "", xlabels = TRUE)
+{
+  res <- ggplot2::theme_bw(base_size = base_size,base_family = base_family) +
+    theme(strip.background =element_rect(fill="white"))+
+    theme(axis.text.y = element_blank())+
+    theme(axis.ticks = element_blank())+
+    scale_x_discrete(expand = c(0,0))+
+    scale_y_continuous(expand = c(0,0))+
+    theme(panel.spacing.x = unit(0,"lines"))
+  if (!xlabels) {
+    res <- res +
+    theme(axis.text.x = element_blank())+
+    theme(axis.title.x = element_blank())
+  }
+  res
+}
 
-#remove x labels from tgeme
-theme_pp_blankx <- c(theme_pp,
-                     theme(axis.text.x = element_blank()),
-                     theme(axis.title.x = element_blank())
-)
+
+
+#' theme_pp
+#'
+#' @param base_size
+#' @param base_family
+#' @param xlabels
+#'
+#' @return
+#' @export
+#'
+#' @examples
+theme_pp <- function (base_size = 12, base_family = "", xlabels = TRUE)
+{
+  res <- list(
+    theme_bw(),
+    theme(strip.background =element_rect(fill="white")),
+    theme(axis.text.y = element_blank()),
+    theme(axis.ticks = element_blank()),
+    scale_x_discrete(expand = c(0,0)),
+    scale_y_continuous(expand = c(0,0)),
+    theme(axis.title.x = element_blank()),
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)),
+    theme(legend.position = "bottom"),
+    theme(panel.spacing = unit(0, "lines")),  # Remove gaps between panels
+    theme(text = element_text(size = base_size))
+  )
+  if (!xlabels) {
+    res <- c(res,list(
+      theme(axis.text.x = element_blank()),
+      theme(axis.title.x = element_blank())
+    )
+    )
+  }
+  res
+}
 
 #' DADA2 output to physloseq object
 #'
@@ -171,7 +209,7 @@ plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,by
 
   #make the stacked bar chart
   i <- ggplot(melt, aes_string(x = xsep, y = "Abundance", fill = "taxon")) +
-    geom_bar(stat = "identity", width = 1, position = position_fill()) +
+    geom_bar(stat = "identity", width = 1, position = position_fill(),color="black") +
     scale_fill_manual(values=cols.n, na.value = "grey")+
     theme(axis.title.x = element_blank())+
     labs(fill=rank)+
