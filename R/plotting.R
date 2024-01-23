@@ -209,7 +209,7 @@ plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,by
 
   #make the stacked bar chart
   i <- ggplot(melt, aes_string(x = xsep, y = "Abundance", fill = "taxon")) +
-    geom_bar(stat = "identity", width = 1, position = position_fill(),color="black") +
+    geom_bar(stat = "identity", width = 1, position = position_fill()) +
     scale_fill_manual(values=cols.n, na.value = "grey")+
     theme(axis.title.x = element_blank())+
     labs(fill=rank)+
