@@ -13,11 +13,13 @@ RoxygenNote: 7.2.3
 URL: https://github.com/Sm3lly123/phyloseq.pal
 BugReports: https://github.com/Sm3lly123/phyloseq.pal/issues
 Imports: 
-    RColorBrewer,
+    Biostrings,
+    dada2,
     forcats,
     ggplot2,
+    phyloseq,
+    RColorBrewer,
     speedyseq,
     tidyverse,
-    phyloseq
 Remotes:
   mikemc/speedyseq
