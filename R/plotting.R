@@ -90,6 +90,8 @@ ps_from_ampliseq <- function(directory,metadata=NULL,ranks){
     ps <- phyloseq::phyloseq(asv,tax)
   }
 
+  ps@tax_table@.Data[is.na(ps@tax_table@.Data)] <- "Unassigned"
+  ps@tax_table@.Data[ps@tax_table@.Data == ""] <- "Unassigned"
 
   return(ps)
 }
