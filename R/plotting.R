@@ -121,17 +121,25 @@ get_big_colours <- function(){
   return(ridiculouslybigcolset)
   }
 
-#to save time recalculating the agglomerated objects throughout the analysis.
-#returns named list of phyloseq objects
 #' Get Gloms
 #'
-#' @param ps
-#' @param ranks
+#' Pre-calculate and return a named list of phyloseq objects agglomerated at specified taxonomic ranks.
 #'
-#' @return
+#' @param ps A phyloseq object.
+#' @param ranks A character vector specifying the taxonomic ranks at which agglomeration should be performed. Default is c("Phylum", "Class", "Order", "Family", "Genus").
+#'
+#' @return A named list of phyloseq objects, each representing the agglomeration at a specified taxonomic rank.
 #' @export
 #'
 #' @examples
+#' # Example usage:
+#' gloms_list <- getgloms(physeq_obj, ranks = c("Phylum", "Class", "Order", "Family", "Genus"))
+#'
+#' @note The resulting list is named based on the specified taxonomic ranks.
+#'
+#' @seealso
+#' \code{\link{phyloseq}}, \code{\link{speedyseq::tax_glom}}
+#'
 getgloms <- function(ps,ranks= c("Phylum" ,"Class","Order","Family","Genus")){
   ps@tax_table@.Data[is.na(ps@tax_table@.Data)] <- "Unassigned"
   gloms <- lapply(ranks, function(x) speedyseq::tax_glom(ps,taxrank=x,NArm=FALSE)) #agglomerate counts per taxon at each of the specied ranks
@@ -139,24 +147,36 @@ getgloms <- function(ps,ranks= c("Phylum" ,"Class","Order","Family","Genus")){
   return(gloms)
 }
 
-#code for making abundance plots with phyloseq objects.
-#by abundance specifies whether to order the taxa by decreasing ferquency in the plot.
-#if no glom is supplied the function will calculate one instead
 #' Plot Taxa Abundance
 #'
-#' @param ps
-#' @param rank
-#' @param xsep
-#' @param wrap
-#' @param n
-#' @param colno
-#' @param byabundance
+#' This function generates stacked bar plots to visualize the abundance of taxa in a phyloseq object.
 #'
-#' @return
+#' @param ps A phyloseq object.
+#' @param rank (default: Genus) The taxonomic rank at which agglomeration should be performed if necessary.
+#' @param x (default: SampleID) The variable to be plotted on the x-axis.
+#' @param wrap (Optional) A variable to be used for faceting the plot.
+#' @param n (Optional, defualt: 20) The number of top taxa to display in the plot.
+#' @param byabundance If TRUE, taxa will be ordered by decreasing abundance; if FALSE, they will be ordered by taxonomic rank.
+#' @param abs If TRUE, plots will use absolute rather than relative counts per sample.
+#' @param size The font size for plot labels.
+#'
+#' @return A ggplot object representing the taxa abundance plot.
 #' @export
 #'
 #' @examples
-plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,byabundance=TRUE,abs=FALSE,size=10){
+#' # Example usage:
+#' data("GlobalPatterns")
+#` ps <- subset_taxa(GlobalPatterns, Phylum %in% c("Proteobacteria", "Bacteroidetes"))
+#` plot_taxa_abundance(psx, "Genus", "Sample", wrap = "SampleType", n = 15, abs = FALSE)
+#'
+#' @note If the phyloseq object is not agglomerated at the specified rank, the function will perform agglomeration.
+
+#' @seealso
+#' \code{\link{phyloseq}}, \code{\link{psmelt}}, \code{\link{tax_glom}}, \code{\link{ggplot2}}
+#'
+#' @importFrom ggplot2 aes_string geom_bar scale_fill_manual labs theme scale_y_continuous scale_x_discrete facet_grid
+#'
+plot_taxa_abundance <- function(ps,rank,x, wrap = NULL, n=20, byabundance=TRUE,abs=FALSE,size=10){
 
   #set cols
   cols.n <- c(c(nice20, ridiculouslybigcolset)[1:n],"lightgrey")
@@ -207,7 +227,7 @@ plot_taxa_abundance <- function(ps,rank,xsep, wrap = NULL, n=20, colno = NULL,by
   }
 
   #labels by abundance w/ unassigned and otehr at end
-  melt$taxon <- fct_relevel(melt$taxon,labels)
+  melt$taxon <- forcats::fct_relevel(melt$taxon,labels)
 
   #make the stacked bar chart
   i <- ggplot(melt, aes_string(x = xsep, y = "Abundance", fill = "taxon")) +
