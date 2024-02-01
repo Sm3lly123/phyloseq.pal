@@ -24,7 +24,7 @@ data(GlobalPatterns)
 gloms <- getgloms(GlobalPatterns, ranks = c("Phylum", "Class", "Order", "Family", "Genus","Species")) 
 ```
 
-2.  `plot_taxa_abundance` This function generates stacked bar plots to visualize the abundance of taxa in a phyloseq object. It includes options for ordering taxa by abundance and overlaying absolute abundance bars.
+2.  `plot_taxa_abundance` To simplify generating stacked bar plots to visualize the abundance of taxa in a phyloseq object. It includes options for ordering taxa by abundance and plotting relative or absolute abundance. You can add one more more faceting variables seperated by a `+`
 
 ```         
 #Pre-agglomerated object:
