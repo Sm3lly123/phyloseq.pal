@@ -1,4 +1,35 @@
 # phyloseq.pal
-Functions For Plotting and Statistical Testing With Phyloseq Objects.
 
-A collection of functions to make it easier to plot certain aspects of phyloseq objects and perform multiple statistical tests across different variables. 
+This README is a WIP!
+
+## Overview
+
+`phyloseq.pal` provides a collection of functions to simplify plotting taxa abundance, conducting alpha diversity analysis, and performing statistical tests on richness metrics with phyloseq objects.
+
+## Installation
+
+```         
+devtools::install_github("ellenelizabethsmith/phyloseq.pal")
+```
+
+## Functions
+
+1.  `getgloms`. Useful if you will be using agglomerated objects many times in your analysis! Returns a named list of phyloseq objects.
+
+```         
+# Example Usage:
+library(phyloseq.pal)
+library(phyloseq)
+data(GlobalPatterns)
+gloms <- getgloms(GlobalPatterns, ranks = c("Phylum", "Class", "Order", "Family", "Genus","Species")) 
+```
+
+2.  `plot_taxa_abundance` This function generates stacked bar plots to visualize the abundance of taxa in a phyloseq object. It includes options for ordering taxa by abundance and overlaying absolute abundance bars.
+
+```         
+#Pre-agglomerated object:
+plot_taxa_abundance(gloms$Genus, rank = "Genus", x = "X.SampleID", wrap = "SampleType", n = 20, byabundance = TRUE, abs = FALSE, size = 10)
+
+#Non-agglomerated
+plot_taxa_abundance(GlobalPatterns, rank = "Family", x = "X.SampleID", wrap = "SampleType", n = 10, byabundance = TRUE, abs = TRUE, size = 10)
+```
