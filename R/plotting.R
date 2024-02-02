@@ -230,7 +230,7 @@ plot_taxa_abundance <- function(ps,rank,x, wrap = NULL, n=20, byabundance=TRUE,a
   melt$taxon <- forcats::fct_relevel(melt$taxon,labels)
 
   #make the stacked bar chart
-  i <- ggplot(melt, aes_string(x = xsep, y = "Abundance", fill = "taxon")) +
+  i <- ggplot(melt, aes_string(x = x, y = "Abundance", fill = "taxon")) +
     geom_bar(stat = "identity", width = 1, position = position_fill()) +
     scale_fill_manual(values=cols.n, na.value = "grey")+
     theme(axis.title.x = element_blank())+
