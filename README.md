@@ -33,3 +33,16 @@ plot_taxa_abundance(gloms$Genus, rank = "Genus", x = "X.SampleID", wrap = "Sampl
 #Non-agglomerated
 plot_taxa_abundance(GlobalPatterns, rank = "Family", x = "X.SampleID", wrap = "SampleType", n = 10, byabundance = TRUE, abs = TRUE, size = 10)
 ```
+
+3.  `get_percentage_assigned` Returns a table with the percentage of ASVs which have a taxonomic assigned at each rank.
+
+```         
+get_percentage_assigned(GlobalPatterns)
+```
+
+4.  `ps_from_ampliseq` is a convenience function for creating a phyloseq object from the dada2 output directory from [nf-core/ampliseq](https://nf-co.re/ampliseq/2.8.0). Note, newer versions of ampliseq may change file names and break this. Metadata addition is optional.
+
+```         
+metadata <- read.csv("my_metadata.csv")
+ps <- ps_from_ampliseq("path/to/top/level/outfolder",metadata)
+```

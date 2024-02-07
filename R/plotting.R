@@ -315,6 +315,39 @@ brayplot_pp <- function(ps, pcoa, colour, shape=NULL){
   return(p)
 }
 
+#' Calculate the percentage of assigned taxa at each taxonomic rank
+#'
+#' This function calculates the percentage of assigned taxa at each taxonomic rank
+#' based on a given phyloseq object.
+#'
+#' @param ps A phyloseq object.
+#'
+#' @return A data frame containing the percentage of assigned taxa at each taxonomic rank.
+#'
+#' @examples
+#' library(phyloseq)
+#' data(GlobalPatterns)
+#' get_percentage_assigned(GlobalPatterns)
+#'
+#' @import phyloseq
+#' @export
+get_percentage_assigned <- function(ps) {
+
+  ps@tax_table@.Data[is.na(ps@tax_table@.Data)] <- "Unassigned"
+  ps@tax_table@.Data[ps@tax_table@.Data == ""] <- "Unassigned"
+
+  table <- as.data.frame(ps@tax_table)
+  pct_un <- list()
+  for (rank in colnames(table)) {
+    l <- length(table[[rank]])
+    u <- length(table[[rank]][table[[rank]] != "Unassigned"])
+    pct_un[[rank]] <- round(u / l * 100, 1)
+  }
+  pct_tab <- data.frame(Rank = names(pct_un), Pct.Assigned = unlist(pct_un))
+  return(pct_tab)
+}
+
+
 #alpha diverstiy plots. richtable is from estimate_richness(ps).
 #' Alpha Diversity Plot
 #'

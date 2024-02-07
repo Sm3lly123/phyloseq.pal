@@ -7,18 +7,45 @@
 plot_taxa_abundance(
   ps,
   rank,
-  xsep,
+  x,
   wrap = NULL,
   n = 20,
-  colno = NULL,
   byabundance = TRUE,
   abs = FALSE,
   size = 10
 )
 }
 \arguments{
-\item{byabundance}{}
+\item{ps}{A phyloseq object.}
+
+\item{rank}{(default: Genus) The taxonomic rank at which agglomeration should be performed if necessary.}
+
+\item{x}{(default: SampleID) The variable to be plotted on the x-axis.}
+
+\item{wrap}{(Optional) A variable to be used for faceting the plot.}
+
+\item{n}{(Optional, defualt: 20) The number of top taxa to display in the plot.}
+
+\item{byabundance}{If TRUE, taxa will be ordered by decreasing abundance; if FALSE, they will be ordered by taxonomic rank.}
+
+\item{abs}{If TRUE, plots will use absolute rather than relative counts per sample.}
+
+\item{size}{The font size for plot labels.}
+}
+\value{
+A ggplot object representing the taxa abundance plot.
 }
 \description{
-Plot Taxa Abundance
+This function generates stacked bar plots to visualize the abundance of taxa in a phyloseq object.
+}
+\note{
+If the phyloseq object is not agglomerated at the specified rank, the function will perform agglomeration.
+}
+\examples{
+# Example usage:
+data("GlobalPatterns")
+
+}
+\seealso{
+\code{\link{phyloseq}}, \code{\link{psmelt}}, \code{\link{tax_glom}}, \code{\link{ggplot2}}
 }
