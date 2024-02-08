@@ -193,8 +193,13 @@ plot_taxa_abundance <- function(ps,rank,x, wrap = NULL, n=20, byabundance=TRUE,a
     glom <- ps
   }
 
+  #Need to ignore unassigned for this step
+  indexes <- which(!apply(glom@tax_table@.Data, 1, function(row) any(grepl("Unassigned", row))))
+  ass_only <- prune_taxa(names(indexes),glom)
+
   #get the specified no of ASVs.
-  topnotus <- names(sort(taxa_sums(glom),TRUE)[1:min(nrow(glom@tax_table),n)])
+  topnotus <- names(sort(taxa_sums(ass_only),TRUE)[1:min(nrow(ass_only@tax_table),n)])
+
 
   #create a taxonomy table containing these ASVs with everything else set to "Other"
   taxtabn = cbind(tax_table(glom), taxon = "Other")
