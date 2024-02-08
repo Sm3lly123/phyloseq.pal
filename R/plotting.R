@@ -188,20 +188,33 @@ plot_taxa_abundance <- function(ps,rank,x, wrap = NULL, n=20, byabundance=TRUE,a
     ps@tax_table@.Data[is.na(ps@tax_table@.Data)] <- "Unassigned"
     glom <-speedyseq::tax_glom(ps, taxrank = rank, NArm = FALSE)
     print("Done.")
-  }else{
+  }
+  else if(rank == "OTU"){
+    print("Using OTUs")
+    glom <- ps
+    tt <- data.frame(glom@tax_table@.Data)
+    tt$OTU <- rownames(tt)
+    tt <- as.matrix(tt)
+    glom@tax_table <- tax_table(tt)
+  }
+  else {
     print("Using provided agglomerated object.")
     glom <- ps
   }
 
-  #get the specified no of ASVs.
-  topnotus <- names(sort(taxa_sums(glom),TRUE)[1:min(nrow(glom@tax_table),n)])
+  tt <- data.frame(glom@tax_table@.Data)
+  keep <- rownames(tt[tt[[rank]]!="Unassigned",])
+
+  ass_only <- prune_taxa(names(keep), glom)
+  topnotus <- names(sort(taxa_sums(ass_only), TRUE)[1:min(nrow(ass_only@tax_table),
+                                                          n)])
 
   #create a taxonomy table containing these ASVs with everything else set to "Other"
   taxtabn = cbind(tax_table(glom), taxon = "Other")
   taxtabn[topnotus, "taxon"] <- as(tax_table(glom)[topnotus, rank],
                                    "character")
   tax_table(glom) <- tax_table(taxtabn)
-  melt <- psmelt(glom)
+  melt <- speedyseq::psmelt(glom)
 
   #get names for reordering factors
   labels <- (unique(melt$taxon))
