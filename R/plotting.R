@@ -405,13 +405,12 @@ merge_orientations <- function(dada_fwd, dada_rvs){
 #'
 #' @examples
 #' # Load necessary libraries and data
-#' library(microshades)
-#' data(yin_g)
+#' data(GlobalPatterns)
 #'
 #' # Create Microshades plot
-#' do_microshades_plot(ps = yin_g, rankhigh = "Phylum", ranklow = "Genus", x = "sample_alias", facet = NULL)
+#' do_microshades_plot(ps = GlobalPatterns, rankhigh = "Phylum", ranklow = "Genus", x = "SampleID", facet = SampleType)
 #'
-#' @importFrom microshades prep_mdf melt_to_top_n create_color_dfs custom_legend plot_microshades
+#' @importFrom microshades prep_mdf create_color_dfs custom_legend plot_microshades
 #' @importFrom ggplot2 scale_y_discrete theme element_text facet_grid
 #' @importFrom ggpubr ggarrange
 #'
@@ -432,7 +431,7 @@ do_microshades_plot <- function(ps, rankhigh = "Phylum", ranklow = "Genus", x, f
   mdf <- microshades::prep_mdf(ps)
 
   # Extract top taxa
-  top <- microshades::melt_to_top_n(ps, n = 5, rank = rankhigh)
+  top <- melt_to_top_n(ps, n = 5, rank = rankhigh)
 
   # Arrange taxa
   fam <- rev(as.character(unique(top$taxon[!top$taxon %in% c("Other", "Unassigned")])))

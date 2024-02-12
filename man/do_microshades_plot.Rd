@@ -31,11 +31,10 @@ This function generates a Microshades plot using data prepared with the microsha
 }
 \examples{
 # Load necessary libraries and data
-library(microshades)
-data(yin_g)
+data(GlobalPatterns)
 
 # Create Microshades plot
-do_microshades_plot(ps = yin_g, rankhigh = "Phylum", ranklow = "Genus", x = "sample_alias", facet = NULL)
+do_microshades_plot(ps = GlobalPatterns, rankhigh = "Phylum", ranklow = "Genus", x = "SampleID", facet = SampleType)
 
 }
 \references{

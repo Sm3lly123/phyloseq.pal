@@ -17,9 +17,11 @@ Imports:
     dada2,
     forcats,
     ggplot2,
+    ggpubr,
     phyloseq,
     RColorBrewer,
     speedyseq,
     tidyverse,
 Remotes:
   mikemc/speedyseq
+  Karstenlabs/microshades
