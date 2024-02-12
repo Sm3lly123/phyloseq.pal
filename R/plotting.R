@@ -147,6 +147,74 @@ getgloms <- function(ps,ranks= c("Phylum" ,"Class","Order","Family","Genus")){
   return(gloms)
 }
 
+melt_to_top_n <- function(ps,n,rank){
+  #check if phyloseq agglomerated at appropriate rank
+  #and if not, perform agglomeration
+  if(!length(unique(as.data.frame(ps@tax_table@.Data)[,rank])) == length(unique(rownames((as.data.frame(ps@tax_table@.Data)))))){
+    print("Agglomerating at specified rank...")
+    ps@tax_table@.Data[is.na(ps@tax_table@.Data)] <- "Unassigned"
+    glom <-speedyseq::tax_glom(ps, taxrank = rank, NArm = FALSE)
+    print("Done.")
+  }  else if(rank == "OTU"){
+    print("Using OTUs")
+    glom <- ps
+    tt <- data.frame(glom@tax_table@.Data)
+    tt$OTU <- rownames(tt)
+    tt <- as.matrix(tt)
+    glom@tax_table <- tax_table(tt)
+  }  else {
+    print("Using provided agglomerated object.")
+    glom <- ps
+  }
+
+  tt <- data.frame(glom@tax_table@.Data)
+  keep <- rownames(tt[tt[[rank]]!="Unassigned",])
+  ass_only <- prune_taxa(keep, glom)
+  topnotus <- names(sort(taxa_sums(ass_only), TRUE)[1:min(nrow(ass_only@tax_table),
+                                                          n)])
+
+  #create a taxonomy table containing these ASVs with everything else set to "Other"
+  tt <- data.frame(glom@tax_table@.Data)
+  tt$taxon <- "Other"
+  tt[tt[[rank]] == "Unassigned",]$taxon <- "Unassigned"
+  tt[rownames(tt) %in% topnotus,]$taxon <- tt[rownames(tt) %in% topnotus,][[rank]]
+
+
+  #taxtabn = data.frame(cbind(tax_table(glom), taxon = "Other"))
+  #taxtabn[topnotus, "taxon"] <- as(tax_table(glom)[topnotus, rank],"character")
+
+  tax_table(glom) <- tax_table(as.matrix(tt))
+  melt <- speedyseq::psmelt(glom)
+
+  #get names for reordering factors
+  labels <- (unique(melt$taxon))
+  nlabs <- length(labels)
+
+  #move "Unassigned" to end
+  if ("Unassigned" %in% labels){
+    labels <- labels[!labels %in% "Unassigned"]
+    labels[nlabs] = "Unassigned"
+  }
+  #if > n taxa, move "Other" to end
+  if("Other" %in% melt$taxon){
+    labels <- labels[!labels %in% "Other"]
+    labels[nlabs] <- "Other"
+  }
+  for(i in seq(1:nlabs)){ #making other and unassigned have consistent colours
+    if(labels[i] == "Unassigned"){
+      cols.n[i] <- "grey"
+    } else if(labels[i] == "Other"){
+      cols.n[i] <- "lightblue"
+    }
+  }
+
+  #labels by abundance w/ unassigned and otehr at end
+  melt$taxon <- forcats::fct_relevel(melt$taxon,labels)
+
+}
+
+
+
 #' Plot Taxa Abundance
 #'
 #' This function generates stacked bar plots to visualize the abundance of taxa in a phyloseq object.
@@ -188,32 +256,35 @@ plot_taxa_abundance <- function(ps,rank,x, wrap = NULL, n=20, byabundance=TRUE,a
     ps@tax_table@.Data[is.na(ps@tax_table@.Data)] <- "Unassigned"
     glom <-speedyseq::tax_glom(ps, taxrank = rank, NArm = FALSE)
     print("Done.")
-  }
-  else if(rank == "OTU"){
+  }  else if(rank == "OTU"){
     print("Using OTUs")
     glom <- ps
     tt <- data.frame(glom@tax_table@.Data)
     tt$OTU <- rownames(tt)
     tt <- as.matrix(tt)
     glom@tax_table <- tax_table(tt)
-  }
-  else {
+  }  else {
     print("Using provided agglomerated object.")
     glom <- ps
   }
 
   tt <- data.frame(glom@tax_table@.Data)
   keep <- rownames(tt[tt[[rank]]!="Unassigned",])
-
-  ass_only <- prune_taxa(names(keep), glom)
+  ass_only <- prune_taxa(keep, glom)
   topnotus <- names(sort(taxa_sums(ass_only), TRUE)[1:min(nrow(ass_only@tax_table),
                                                           n)])
 
   #create a taxonomy table containing these ASVs with everything else set to "Other"
-  taxtabn = cbind(tax_table(glom), taxon = "Other")
-  taxtabn[topnotus, "taxon"] <- as(tax_table(glom)[topnotus, rank],
-                                   "character")
-  tax_table(glom) <- tax_table(taxtabn)
+  tt <- data.frame(glom@tax_table@.Data)
+  tt$taxon <- "Other"
+  tt[tt[[rank]] == "Unassigned",]$taxon <- "Unassigned"
+  tt[rownames(tt) %in% topnotus,]$taxon <- tt[rownames(tt) %in% topnotus,][[rank]]
+
+
+  #taxtabn = data.frame(cbind(tax_table(glom), taxon = "Other"))
+  #taxtabn[topnotus, "taxon"] <- as(tax_table(glom)[topnotus, rank],"character")
+
+  tax_table(glom) <- tax_table(as.matrix(tt))
   melt <- speedyseq::psmelt(glom)
 
   #get names for reordering factors
@@ -233,8 +304,7 @@ plot_taxa_abundance <- function(ps,rank,x, wrap = NULL, n=20, byabundance=TRUE,a
   for(i in seq(1:nlabs)){ #making other and unassigned have consistent colours
     if(labels[i] == "Unassigned"){
       cols.n[i] <- "grey"
-    }
-    else if(labels[i] == "Other"){
+    } else if(labels[i] == "Other"){
       cols.n[i] <- "lightblue"
     }
   }
