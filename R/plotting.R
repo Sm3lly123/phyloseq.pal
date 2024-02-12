@@ -3,7 +3,7 @@
 library(ggplot2)
 
 #Nice high contrast 20 colours
-nice20 <- c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6',   '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1',   '#000075', '#808080')
+nice20 <- c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1',   '#000075', '#808080')
 #larger set from rcolor brewer - a bit ugly but necessary
 bigcolset<-c(RColorBrewer::brewer.pal(8,"Set2"), RColorBrewer::brewer.pal(12,"Set3"), RColorBrewer::brewer.pal(9,"Set1"), RColorBrewer::brewer.pal(12,"Paired"))
 #a last resort!!!!!!
@@ -389,6 +389,80 @@ merge_orientations <- function(dada_fwd, dada_rvs){
   return(combined.derep)
 
 }
+
+#' Create Microshades Plot
+#'
+#' This function generates a Microshades plot using data prepared with the microshades package. Microshades is a package designed for analyzing microbiome data, particularly for visualizing taxonomic abundance across samples.
+#'
+#' @param ps An object representing the microbiome data. It should be preprocessed with the microshades package.
+#' @param rankhigh The higher taxonomic rank to consider for grouping taxa. Default is "Phylum".
+#' @param ranklow The lower taxonomic rank to consider for grouping taxa. Default is "Genus".
+#' @param x The variable to be plotted on the x-axis.
+#' @param facet An optional variable to facet the plot by. Default is NULL.
+#'
+#' @return A Microshades plot visualizing taxonomic abundance across samples.
+#' @export
+#'
+#' @examples
+#' # Load necessary libraries and data
+#' library(microshades)
+#' data(yin_g)
+#'
+#' # Create Microshades plot
+#' do_microshades_plot(ps = yin_g, rankhigh = "Phylum", ranklow = "Genus", x = "sample_alias", facet = NULL)
+#'
+#' @importFrom microshades prep_mdf melt_to_top_n create_color_dfs custom_legend plot_microshades
+#' @importFrom ggplot2 scale_y_discrete theme element_text facet_grid
+#' @importFrom ggpubr ggarrange
+#'
+#' @seealso
+#' \code{\link{prep_mdf}}, \code{\link{melt_to_top_n}}, \code{\link{create_color_dfs}}, \code{\link{custom_legend}}, \code{\link{plot_microshades}}
+#'
+#' @references
+#' Microshades package: https://github.com/KarstensLab/microshades
+#'
+#' Karstens, L., Asquith, M., Davin, S., Stauffer, P., Fair, D., & Gregory, W. T. (2018). Microbiome analyses and
+#' endophenotypic associations in colorectal cancer. Gut Pathogens, 10(1), 1-14. https://doi.org/10.1186/s13099-018-0275-6
+#'
+#' @keywords microshades plot microbiome
+#' @family visualization
+do_microshades_plot <- function(ps, rankhigh = "Phylum", ranklow = "Genus", x, facet = NULL) {
+
+  # Prepare microbiome data
+  mdf <- microshades::prep_mdf(ps)
+
+  # Extract top taxa
+  top <- microshades::melt_to_top_n(ps, n = 5, rank = rankhigh)
+
+  # Arrange taxa
+  fam <- rev(as.character(unique(top$taxon[!top$taxon %in% c("Other", "Unassigned")])))
+
+  # Create color palette
+  color_obj <- microshades::create_color_dfs(mdf = mdf, selected_groups = fam, group_level = rankhigh, subgroup_level = ranklow, top_n_subgroups = 4, cvd = TRUE)
+
+  # Extract color dataframes
+  mdf_group <- color_obj$mdf
+  cdf <- color_obj$cdf
+
+  # Create custom legend
+  leg <- microshades::custom_legend(mdf = color_obj$mdf, cdf = color_obj$cdf, group_level = rankhigh, subgroup_level = ranklow, x = "sample_alias", legend_text_size = 20)
+
+  # Generate Microshades plot
+  p <- microshades::plot_microshades(mdf_group, cdf, group_label = paste0(rankhigh, " ", ranklow), x = x, y = "Abundance") +
+    scale_y_discrete(expand = c(0, 0)) +
+    theme_pp() +
+    theme(text = element_text(size = 15), legend.position = "none") +
+    ylab(paste(rankhigh, ranklow, sep = " "))
+
+  # Facet the plot if specified
+  if (is.character(facet)) {
+    p <- p + facet_grid(as.formula(paste("~", facet)), scales = "free_x", space = "free")
+  }
+
+  # Arrange plot and legend
+  ggpubr::ggarrange(p, leg, widths = c(0.6, 0.1))
+}
+
 
 #Bray curtis plots. PCOA is table from "ordinate(ps)".
 #' Bray Plot
