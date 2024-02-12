@@ -47,7 +47,7 @@ metadata <- read.csv("my_metadata.csv")
 ps <- ps_from_ampliseq("path/to/top/level/outfolder",metadata)
 ```
 
-5. `do_microshades_plot` Convenience wrapper for using [KarstensLab/microshdes](https://github.com/KarstensLab/microshades) with a phyloseq object. Uses top 5 most abundant in "rankhigh"
+5. `do_microshades_plot` Convenience wrapper for using [KarstensLab/microshdes](https://github.com/KarstensLab/microshades) with a phyloseq object. Uses top 5 most abundant in "rankhigh". Facet is optional.
 
 ```
 do_microshades_plot(ps = GlobalPatterns, rankhigh = "Phylum", ranklow = "Genus", x = "SampleID", facet = SampleType)
