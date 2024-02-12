@@ -40,9 +40,15 @@ plot_taxa_abundance(GlobalPatterns, rank = "Family", x = "X.SampleID", wrap = "S
 get_percentage_assigned(GlobalPatterns)
 ```
 
-4.  `ps_from_ampliseq` is a convenience function for creating a phyloseq object from the dada2 output directory from [nf-core/ampliseq](https://nf-co.re/ampliseq/2.8.0). Note, newer versions of ampliseq may change file names and break this. Metadata addition is optional.
+4.  `ps_from_ampliseq`For creating a phyloseq object from the dada2 output directory from [nf-core/ampliseq](https://nf-co.re/ampliseq/2.8.0). Note, newer versions of ampliseq may change file names and break this. Metadata addition is optional.
 
 ```         
 metadata <- read.csv("my_metadata.csv")
 ps <- ps_from_ampliseq("path/to/top/level/outfolder",metadata)
+```
+
+5. `do_microshades_plot` Convenience wrapper for using [KarstensLab/microshdes](https://github.com/KarstensLab/microshades) with a phyloseq object
+
+```
+do_microshades_plot(ps = GlobalPatters, rankhigh = "Phylum", ranklow = "Genus", x = "SampleID", facet = SampleType)
 ```
