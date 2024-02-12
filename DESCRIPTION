@@ -23,5 +23,5 @@ Imports:
     speedyseq,
     tidyverse,
 Remotes:
-  mikemc/speedyseq
+  mikemc/speedyseq,
   Karstenlabs/microshades
