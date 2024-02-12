@@ -24,4 +24,4 @@ Imports:
     tidyverse,
 Remotes:
   mikemc/speedyseq,
-  /KarstensLab/microshades
+  KarstensLab/microshades
